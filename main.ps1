@@ -1,17 +1,22 @@
 Add-Type -AssemblyName System.Windows.Forms
 
-$dialog = New-Object System.Windows.Forms.OpenDileDialog
-$dialog.InitalDirectory = [System.Environment]::GetFolderPath("MyDesktop")
+$dialog = New-Object System.Windows.Forms.OpenFileDialog
+$dialog.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 $dialog.Filter = "Excel Files (*.xlsx)|*.xlsx|All files (*.*)|*.*"
 $dialog.Title = "Select excel file to append."
 
+if($dialog.ShowDialog() -eq "OK"){
+    $newFile = $dialog.FileName
+}else{
+    exit
+}
 
-$data = Import-Excel "/Users/marcellouscurtis/Documents/Projects/Freelance/Element/Job Cost 7.07.25-7.17.25 Pay Period (7.25.25).xlsx" -WorksheetName "7.07.25-7.17.25 Pay Period"
+$template = Import-Excel "Template.xlsx"
 
-$data2 = Import-Excel '/Users/marcellouscurtis/Documents/Projects/Freelance/Element/ECD 2025-06-27 Job Cost JE - Complete.xlsx' -WorksheetName '6.09.25-6.20.25 Pay Period'
+$merged = $template + $newFile
 
-Write-Host $data
+$desktop = [System.Environment]::GetFolderPath("Deskop")
 
-$data3 = $data + $data2
+$retunPath = Join-Path -Path $desktop -ChildPath "main.xlsx"
 
-$data3 | Export-Excel "Here.xlsx"
+$merged | Export-Excel $retunPath

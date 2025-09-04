@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.Windows.Forms
-
-$dialog = New-Object System.Windows.Forms.OpenFileDialog
+# manually time sheet
+$dialog = New-Object System.Windows.Forms.FolderBrowserDialog
 $dialog.InitialDirectory = [System.Environment]::GetFolderPath("Desktop")
 $dialog.Filter = "Excel Files (*.xlsx)|*.xlsx|All files (*.*)|*.*"
 $dialog.Title = "Select excel file to append."
@@ -11,12 +11,10 @@ if($dialog.ShowDialog() -eq "OK"){
     exit
 }
 
-$template = Import-Excel "Template.xlsx"
+$main = Import-Excel "C:\Users\Marcellous\Desktop\main.xlsx"
+$newdata = Import-Excel $newFile
+$merged = $main + $newdata
 
-$merged = $template + $newFile
+# $desktop = [System.Environment]::GetFolderPath("Desktop")
 
-$desktop = [System.Environment]::GetFolderPath("Deskop")
-
-$retunPath = Join-Path -Path $desktop -ChildPath "main.xlsx"
-
-$merged | Export-Excel $retunPath
+$merged | Export-Excel $main
